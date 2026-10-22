@@ -8,13 +8,24 @@ Requirements: .NET 10 SDK and Docker Compose.
 
 ```sh
 docker compose up -d postgres
-cd SushiMarketplace.Api
 dotnet tool restore
 dotnet ef database update
 dotnet run
 ```
 
-Open `/scalar` at the HTTP URL printed by `dotnet run`. The project includes an initial EF Core migration and seeds three sample products when the app starts. When the model changes, add a migration from `SushiMarketplace.Api` with `dotnet ef migrations add <Name>`, then apply it with `dotnet ef database update`.
+The compose file publishes PostgreSQL on host port 5433, but the `dotnet ef` design-time factory defaults to port 5432. Set `ConnectionStrings__Marketplace` to `Host=localhost;Port=5433;Database=marketplace;Username=marketplace;Password=marketplace` in your shell before the commands above.
+
+Open `/scalar` at the HTTP URL printed by `dotnet run`. The project includes an initial EF Core migration and seeds three sample products when the app starts. When the model changes, add a migration from the repository root with `dotnet ef migrations add <Name>`, then apply it with `dotnet ef database update`.
+
+## Run with Docker
+
+```sh
+docker compose up --build
+```
+
+The API listens on `http://localhost:8080`, and Scalar is at `http://localhost:8080/scalar`. The compose file sets `ASPNETCORE_ENVIRONMENT=Development`, which enables Scalar and OpenAPI. Migrations run and the sample products are seeded at startup, so no `dotnet ef` step is needed.
+
+PostgreSQL is published on `localhost:5433`. Inside the Docker network, the `api` service must use port 5432 because 5433 exists only on your machine. Stop the stack with `docker compose down`, or use `docker compose down -v` to also delete the database volume.
 
 ## Happy path
 

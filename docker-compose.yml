@@ -6,14 +6,24 @@ services:
       POSTGRES_USER: marketplace
       POSTGRES_PASSWORD: marketplace
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - marketplace-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U marketplace -d marketplace"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U marketplace -d marketplace"]
       interval: 5s
       timeout: 3s
       retries: 10
+  api:
+    build: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Marketplace: "Host=postgres;Port=5432;Database=marketplace;Username=marketplace;Password=marketplace"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   marketplace-data:

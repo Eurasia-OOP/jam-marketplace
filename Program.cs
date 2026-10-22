@@ -14,7 +14,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<MarketplaceDbContext>(options => options.UseNpgsql(
     builder.Configuration.GetConnectionString("Marketplace") ??
-    "Host=localhost;Port=5432;Database=marketplace;Username=marketplace;Password=marketplace"));
+    "Host=localhost;Port=5433;Database=marketplace;Username=marketplace;Password=marketplace"));
 builder.Services.AddSingleton<OrderStateMachine>();
 
 var app = builder.Build();
